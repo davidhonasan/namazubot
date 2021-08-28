@@ -1,0 +1,5 @@
+.vscode
+__pycache__
+namazu.db
+nohup.out
+.env
