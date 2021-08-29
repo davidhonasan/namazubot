@@ -6,6 +6,11 @@ class Alarm:
     self.alarm = alarm[1]
     self.notes = alarm[2]
 
+class AlarmSubscriber:
+  def __init__(self, subscriber):
+    self.id = subscriber[0]
+    self.user_id = subscriber[1]
+
 class Database:
   def __init__(self):
     self.conn = sqlite3.connect('namazu.db')
@@ -27,10 +32,10 @@ class Database:
       )""")
 
   # Alarm Subscribers
-
   def get_alarm_subscribers(self):
-    return self.cursor.execute('SELECT user_id FROM alarm_subscribers').fetchall()
-  
+    subscribers = self.cursor.execute('SELECT * FROM alarm_subscribers').fetchall()
+    return list(map(AlarmSubscriber, subscribers))
+
   def check_alarm_subscriber(self, id):
     return self.cursor.execute('SELECT EXISTS( SELECT 1 FROM alarm_subscribers WHERE user_id = ?)', (id,)).fetchone()[0]
 
@@ -44,7 +49,7 @@ class Database:
 
   # Alarm
   def get_alarms(self):
-    alarms = self.cursor.execute('SELECT * FROM alarms ORDER BY alarm ASC').fetchall()
+    alarms = self.cursor.execute('SELECT * FROM alarms').fetchall()
     return list(map(Alarm, alarms))
 
   def get_alarm(self, id):
@@ -58,7 +63,7 @@ class Database:
   def check_alarm(self, id):
     return self.cursor.execute('SELECT EXISTS( SELECT 1 FROM alarms WHERE id = ?)', (id,)).fetchone()[0]
 
-  def add_alarm(self, datetime, notes='Ship'):
+  def add_alarm(self, datetime, notes):
     self.cursor.execute('INSERT INTO alarms VALUES (?,?,?)', (None, datetime, notes))
     self.conn.commit()
 
