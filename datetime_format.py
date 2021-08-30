@@ -1,8 +1,11 @@
 import datetime
 import math
 
-def styled_datetime(datetime):
-  return datetime.strftime('%a %d/%m/%Y %H:%M:%S %Z')
+def styled_datetime(datetime, time_only=False):
+  if time_only:
+    return datetime.strftime('%H:%M:%S')
+  else:
+    return datetime.strftime('%a %d/%m/%Y %H:%M:%S %Z')
 
 def styled_timedelta(timedelta):
   formatted_string = ''
