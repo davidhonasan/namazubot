@@ -103,6 +103,7 @@ async def voyage_alarm(ctx, *, args=''):
             time_later = time_now + datetime.timedelta(days=day_parsed, hours=hr_parsed, minutes=min_parsed)
             db.add_alarm(time_later.timestamp(), notes_parsed)
             await ctx.reply('Alarm added: {}'.format(notes_parsed), mention_author=False)
+            await check_voyage_tasks()
         else:
             await ctx.reply('No arguments inputted', mention_author=False)
     
@@ -113,6 +114,7 @@ async def voyage_alarm(ctx, *, args=''):
             if db.check_alarm(args):
                 db.remove_alarm(args)
                 await ctx.reply('Alarm removed', mention_author=False)
+                await check_voyage_tasks()
             else:
                 await ctx.reply('Error, no alarm with id: {}'.format(args), mention_author=False)
         else:
@@ -152,10 +154,7 @@ async def voyage_alarm(ctx, *, args=''):
         embed.set_thumbnail(url="https://img.finalfantasyxiv.com/lds/pc/global/images/itemicon/d8/d8666795d88025ac8283db68e5df2aa337a51749.png")
         embed.set_footer(text='Current Time: ' + styled_datetime(current_time))
         await ctx.reply(embed=embed, mention_author=False)
-        return
     else:
         await ctx.reply('Wrong parameters', mention_author=False)
-
-    await check_voyage_tasks()
 
 bot.run(TOKEN)
