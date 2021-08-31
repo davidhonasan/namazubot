@@ -41,26 +41,35 @@ async def on_ready():
     await check_voyage_tasks()
 
 async def check_voyage_tasks():
+    # restart if there's an ongoing await
+    if voyage_notification.is_running():
+        voyage_notification.restart()
+    else:
+        voyage_notification.start()
+        
+@tasks.loop()
+async def voyage_notification():
+    # check if there's any alarm
     if db.get_alarms():
         earliest_alarm = db.get_earliest_alarm()
+
         time_to_wake = earliest_alarm.alarm - datetime.datetime.now(tz=tz_jkt).timestamp()
         await asyncio.sleep(time_to_wake)
-        await send_voyage_notification(earliest_alarm)
 
-async def send_voyage_notification(earliest_alarm):
-    message_channel = bot.get_channel(881189831189856288)
-    alarm_subscribers = db.get_alarm_subscribers()
-    
-    mention_list = ''
-    for subscriber in alarm_subscribers:
-        mention_list += '<@' + subscriber.user_id + '> '
-    
-    embed = NamazuEmbed(title='Voyage Completed!', color=discord.Colour.green(), description=earliest_alarm.notes)
-    embed.set_thumbnail(url="https://img.finalfantasyxiv.com/lds/pc/global/images/itemicon/d8/d8666795d88025ac8283db68e5df2aa337a51749.png")
-    await message_channel.send(content = mention_list, embed = embed)
+        message_channel = bot.get_channel(881189831189856288)
+        alarm_subscribers = db.get_alarm_subscribers()
+        
+        mention_list = ''
+        for subscriber in alarm_subscribers:
+            mention_list += '<@' + subscriber.user_id + '> '
+        
+        embed = NamazuEmbed(title='Voyage Completed!', color=discord.Colour.green(), description=earliest_alarm.notes)
+        embed.set_thumbnail(url="https://img.finalfantasyxiv.com/lds/pc/global/images/itemicon/d8/d8666795d88025ac8283db68e5df2aa337a51749.png")
+        await message_channel.send(content = mention_list, embed = embed)
 
-    db.remove_alarm(earliest_alarm.id)
-    await check_voyage_tasks()
+        db.remove_alarm(earliest_alarm.id)
+    else:
+        voyage_notification.stop()
 
 @bot.command(name='ping', help="Check bot latency")
 async def ping(ctx):
