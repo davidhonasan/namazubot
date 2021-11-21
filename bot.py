@@ -140,7 +140,7 @@ async def voyage_alarm(ctx, *, args=''):
             time_now = datetime.datetime.now(tz=tz_jkt).replace(microsecond=0)
             time_later = time_now + datetime.timedelta(days=day_parsed, hours=hr_parsed, minutes=min_parsed)
             db.add_alarm(time_later.timestamp(), notes_parsed)
-            await ctx.reply('Alarm added: {0} (<t:{1}:R>)'.format(notes_parsed, time_later.timestamp()), mention_author=False)
+            await ctx.reply('Alarm added: {0} (<t:{1}:R>)'.format(notes_parsed, round(time_later.timestamp())), mention_author=False)
             await check_voyage_tasks()
         else:
             await ctx.reply('No arguments inputted', mention_author=False)
