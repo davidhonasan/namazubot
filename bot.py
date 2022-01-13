@@ -130,7 +130,7 @@ async def voyage_alarm(ctx, *, args=''):
         args = args[4:]
         if args.strip():
             day_re = re.compile('[0-9](?= ?d(ays?)?)')
-            hr_re = re.compile('[0-2]?[0-9](?= ?h((ou)?r)?s?)')
+            hr_re = re.compile('[0-9]?[0-9](?= ?h((ou)?r)?s?)')
             min_re = re.compile('[0-5]?[0-9](?= ?m(in(ute)?s?)?)')
             notes_re = re.compile('(?<=\"|\')[\s\S]+(?=\"|\')')
             day_parsed = int(day_re.search(args).group()) if day_re.search(args) else 0
